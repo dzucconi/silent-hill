@@ -1,3 +1,14 @@
+const CONFIG = {
+  amount: 150,
+  speed: 1000,
+};
+
+const STATE = {
+  step: 'right',
+  current: [0, 0],
+  previous: [0, 0],
+};
+
 const img = ({ width, height, src, name }) => {
   const i = new Image(width, height);
   i.src = src;
@@ -6,21 +17,24 @@ const img = ({ width, height, src, name }) => {
 };
 
 const shoes = {
-  right: img({ width: 75, height: 164, src: './right.png', name: 'right' }),
-  left: img({ width: 75, height: 164, src: './left.png', name: 'left' }),
+  right: img({
+    width: 50,
+    height: 109,
+    src: './right.png',
+    name: 'right',
+  }),
+  left: img({
+    width: 50,
+    height: 109,
+    src: './left.png',
+    name: 'left',
+  }),
 };
 
-const CONFIG = {
-  amount: 150,
-  speed: 2000,
-};
-
-const STATE = {
-  step: 'right',
-  top: 0,
-  left: 0,
-  steps: 0,
-};
+const next = ([top, left], angle) => ([
+  Math.round(Math.sin(angle * Math.PI / 180) * CONFIG.amount + top),
+  Math.round(Math.cos(angle * Math.PI / 180) * CONFIG.amount + left),
+]);
 
 const rand = (min, max) =>
   Math.random() * (max - min) + min;
@@ -38,47 +52,33 @@ const move = (delta) => (x) => {
 const angle = ([top1, left1], [top2, left2]) =>
   (Math.atan2(top2 - top1, left2 - left1) * 180 / Math.PI) + 90;
 
+const isOutOfBounds = () => (
+  (STATE.previous[0] >= window.innerHeight || STATE.previous[0] <= 0) ||
+  (STATE.previous[1] >= window.innerWidth || STATE.previous[1] <= 0)
+);
+
 const step = () => {
-  if (
-    (STATE.top >= window.innerHeight || STATE.top <= 0) ||
-    (STATE.left >= window.innerWidth || STATE.left <= 0)
-  ) STATE.steps = 0;
-
-  if (STATE.steps === 0) {
-    const [top, left] = start();
-
-    STATE.top = top;
-    STATE.left = left;
-
-    STATE.moveTop = (STATE.top >= window.innerHeight / 2)
-      ? move(-CONFIG.amount) : move(CONFIG.amount);
-    STATE.moveLeft = (STATE.left >= window.innerWidth / 2)
-      ? move(-CONFIG.amount) : move(CONFIG.amount);
-
-  } else {
-    STATE.top = STATE.moveTop(STATE.top);
-    STATE.left = STATE.moveLeft(STATE.left);
+  if (isOutOfBounds()) {
+    STATE.angle = rand(0, 360);
+    STATE.previous = start();
   }
 
+  STATE.current = next(STATE.previous, STATE.angle);
   STATE.step = (STATE.step === 'right') ? 'left' : 'right';
-  STATE.steps++;
+};
 
-  return STATE;
+const render = () => {
+  const image = shoes[STATE.step];
+  image.style.top = `${STATE.current[0]}px`;
+  image.style.left = `${STATE.current[1]}px`;
+  image.style.transform = `rotate(${STATE.angle + 90}deg)`;
+  document.body.appendChild(image);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => {
-    STATE.previous = [STATE.top, STATE.left];
-
+    STATE.previous = STATE.current;
     step();
-
-    STATE.angle = angle(STATE.previous, [STATE.top, STATE.left]);
-
-    const image = shoes[STATE.step];
-    image.style.top = `${STATE.top}px`;
-    image.style.left = `${STATE.left}px`;
-    image.style.transform = `rotate(${STATE.angle}deg)`;
-
-    document.body.appendChild(image);
+    render();
   }, CONFIG.speed);
 });

@@ -9,27 +9,12 @@ body {
   overflow: hidden;
 }
 
-.point {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background-color: white;
-}
-
 .left,
 .right {
   position: absolute;
-  animation: fade 4s;
+  animation: fade 2s;
   animation-iteration-count: 1;
   opacity: 0;
 }
-
-.left {
-  padding-right: 100px;
-  /*background-color: red;*/
-}
-
-.right {
-  padding-left: 100px;
-  /*background-color: blue;*/
-}
+  .left { padding-right: 100px; }
+  .right { padding-left: 100px; }
