@@ -20,13 +20,13 @@ const shoes = {
   right: img({
     width: 50,
     height: 109,
-    src: './right.png',
+    src: './right_b.png',
     name: 'right',
   }),
   left: img({
     width: 50,
     height: 109,
-    src: './left.png',
+    src: './left_b.png',
     name: 'left',
   }),
 };
