@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "brunch watch --server",
-    "prod": "brunch build --production"
+    "prod": "brunch build --production",
+    "sync": "s3-cli --config .s3config sync --delete-removed --acl-public public/ s3://work.damonzucconi.com/$npm_package_name",
+    "deploy": "npm run prod && npm run sync"
   },
   "dependencies": {},
   "devDependencies": {
@@ -20,6 +22,7 @@
     "clean-css-brunch": "^2.0.0",
     "css-brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",
+    "s3-cli": "^0.13.0",
     "uglify-js-brunch": "^2.0.0"
   }
 }
