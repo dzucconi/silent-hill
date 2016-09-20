@@ -12,7 +12,7 @@ body {
 .left,
 .right {
   position: absolute;
-  animation: fade 2s;
+  animation: fade 3s;
   animation-iteration-count: 1;
   opacity: 0;
 }
