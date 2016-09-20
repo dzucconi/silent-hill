@@ -1,6 +1,7 @@
 const CONFIG = {
   amount: 150,
-  speed: 1000,
+  speed: 1500,
+  offset: 100,
 };
 
 const STATE = {
@@ -40,27 +41,19 @@ const rand = (min, max) =>
   Math.random() * (max - min) + min;
 
 const start = () => ([
-  Math.floor(rand(0, window.innerHeight)),
-  Math.floor(rand(0, window.innerWidth)),
+  Math.floor(rand(0, window.innerHeight - CONFIG.offset)),
+  Math.floor(rand(0, window.innerWidth - CONFIG.offset)),
 ]);
 
-const move = (delta) => (x) => {
-  if (x instanceof Array) return x.map(i => i + delta);
-  return x + delta;
-};
-
-const angle = ([top1, left1], [top2, left2]) =>
-  (Math.atan2(top2 - top1, left2 - left1) * 180 / Math.PI) + 90;
-
 const isOutOfBounds = () => (
-  (STATE.previous[0] >= window.innerHeight || STATE.previous[0] <= 0) ||
-  (STATE.previous[1] >= window.innerWidth || STATE.previous[1] <= 0)
+  (STATE.previous[0] >= (window.innerHeight - CONFIG.offset) || STATE.previous[0] <= CONFIG.offset) ||
+  (STATE.previous[1] >= (window.innerWidth - CONFIG.offset) || STATE.previous[1] <= CONFIG.offset)
 );
 
 const step = () => {
   if (isOutOfBounds()) {
-    STATE.angle = rand(0, 360);
     STATE.previous = start();
+    STATE.angle = rand(0, 360);
   }
 
   STATE.current = next(STATE.previous, STATE.angle);
