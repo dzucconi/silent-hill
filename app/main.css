@@ -16,5 +16,18 @@ body {
   animation-iteration-count: 1;
   opacity: 0;
 }
-  .left { padding-right: 100px; }
-  .right { padding-left: 100px; }
+  .left {
+    padding-right: 100px;
+  }
+  .right {
+    padding-left: 100px;
+  }
+
+@media (max-width: 640px) {
+  .left {
+    padding-right: 50px;
+  }
+  .right {
+    padding-left: 50px;
+  }
+}

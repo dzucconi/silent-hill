@@ -1,13 +1,21 @@
 const CONFIG = {
-  amount: 150,
-  speed: 1500,
-  offset: 100,
-};
+  global: {
+    speed: 1500,
+  },
 
-const STATE = {
-  step: 'right',
-  current: [0, 0],
-  previous: [0, 0],
+  desktop: {
+    offset: 100,
+    amount: 150,
+    width: 50,
+    height: 109,
+  },
+
+  mobile: {
+    offset: 20,
+    amount: 50,
+    width: 25,
+    height: 54.5,
+  }
 };
 
 const img = ({ width, height, src, name }) => {
@@ -17,37 +25,49 @@ const img = ({ width, height, src, name }) => {
   return i;
 };
 
-const shoes = {
+const buildShoes = screen => ({
   right: img({
-    width: 50,
-    height: 109,
+    width: CONFIG[screen].width,
+    height: CONFIG[screen].height,
     src: './right_b.png',
     name: 'right',
   }),
   left: img({
-    width: 50,
-    height: 109,
+    width: CONFIG[screen].width,
+    height: CONFIG[screen].height,
     src: './left_b.png',
     name: 'left',
   }),
+});
+
+const shoes = {
+  desktop: buildShoes('desktop'),
+  mobile: buildShoes('mobile'),
+};
+
+const STATE = {
+  screen: 'desktop',
+  step: 'right',
+  current: [0, 0],
+  previous: [0, 0],
 };
 
 const next = ([top, left], angle) => ([
-  Math.round(Math.sin(angle * Math.PI / 180) * CONFIG.amount + top),
-  Math.round(Math.cos(angle * Math.PI / 180) * CONFIG.amount + left),
+  Math.round(Math.sin(angle * Math.PI / 180) * CONFIG[STATE.screen].amount + top),
+  Math.round(Math.cos(angle * Math.PI / 180) * CONFIG[STATE.screen].amount + left),
 ]);
 
 const rand = (min, max) =>
   Math.random() * (max - min) + min;
 
 const start = () => ([
-  Math.floor(rand(0, window.innerHeight - CONFIG.offset)),
-  Math.floor(rand(0, window.innerWidth - CONFIG.offset)),
+  Math.floor(rand(0, window.innerHeight - CONFIG[STATE.screen].offset)),
+  Math.floor(rand(0, window.innerWidth - CONFIG[STATE.screen].offset)),
 ]);
 
 const isOutOfBounds = () => (
-  (STATE.previous[0] >= (window.innerHeight - CONFIG.offset) || STATE.previous[0] <= CONFIG.offset) ||
-  (STATE.previous[1] >= (window.innerWidth - CONFIG.offset) || STATE.previous[1] <= CONFIG.offset)
+  (STATE.previous[0] >= (window.innerHeight - CONFIG[STATE.screen].offset) || STATE.previous[0] <= CONFIG[STATE.screen].offset) ||
+  (STATE.previous[1] >= (window.innerWidth - CONFIG[STATE.screen].offset) || STATE.previous[1] <= CONFIG[STATE.screen].offset)
 );
 
 const step = () => {
@@ -61,7 +81,7 @@ const step = () => {
 };
 
 const render = () => {
-  const image = shoes[STATE.step];
+  const image = shoes[STATE.screen][STATE.step];
   image.style.top = `${STATE.current[0]}px`;
   image.style.left = `${STATE.current[1]}px`;
   image.style.transform = `rotate(${STATE.angle + 90}deg)`;
@@ -73,5 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
     STATE.previous = STATE.current;
     step();
     render();
-  }, CONFIG.speed);
+  }, CONFIG.global.speed);
 });
+
+const setScreen = width =>
+  STATE.screen = (width >= 600) ? 'desktop' : 'mobile';
+
+setScreen(window.innerWidth);
+
+window.onresize = () => {
+  setScreen(window.innerWidth);
+  console.log(STATE.screen)
+};
